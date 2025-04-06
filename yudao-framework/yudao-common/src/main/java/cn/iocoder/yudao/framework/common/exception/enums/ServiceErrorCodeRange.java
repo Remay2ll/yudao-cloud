@@ -14,6 +14,7 @@ package cn.iocoder.yudao.framework.common.exception.enums;
  *      003 - 订单系统
  *      004 - 支付系统
  *      005 - 优惠劵系统
+ *      006 - 维保系统
  *      ... - ...
  * 第三段，3 位，模块
  *      不限制规则。
