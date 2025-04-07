@@ -21,6 +21,9 @@ public class WtyDevicePageReqVO extends PageParam {
     @Schema(description = "设备编号")
     private String deviceCode;
 
+    @Schema(description = "设备描述", example = "你说的对")
+    private String description;
+
     @Schema(description = "设备类型ID", example = "16119")
     private Long typeId;
 

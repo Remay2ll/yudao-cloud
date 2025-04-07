@@ -13,8 +13,8 @@ public interface ErrorCodeConstants {
     ErrorCode WTY_DEVICE_NOT_EXISTS = new ErrorCode(1_006_000_000, "设备不存在");
     // ========== DEVICE-TYPE 模块 1-006-001-000 ==========
     ErrorCode DEVICE_TYPE_NOT_EXISTS = new ErrorCode(1_006_001_000, "设备类型不存在");
+    // ========== COMPONENT 模块 1-006-002-000 ==========
+    ErrorCode WTY_COMPONENT_NOT_EXISTS = new ErrorCode(1_006_002_000, "配件不存在");
     // ========== DEVICE-TYPE-COMPONENT_REL 模块 1-006-003-000 ==========
     ErrorCode TYPE_COMPONENT_REL_NOT_EXISTS = new ErrorCode(1_006_003_000, "设备类型-配件关联不存在");
-
-
 }

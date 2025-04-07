@@ -21,6 +21,7 @@ public interface WtyDeviceMapper extends BaseMapperX<WtyDeviceDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<WtyDeviceDO>()
                 .likeIfPresent(WtyDeviceDO::getDeviceName, reqVO.getDeviceName())
                 .eqIfPresent(WtyDeviceDO::getDeviceCode, reqVO.getDeviceCode())
+                .likeIfPresent(WtyDeviceDO::getDescription, reqVO.getDescription())
                 .eqIfPresent(WtyDeviceDO::getTypeId, reqVO.getTypeId())
                 .eqIfPresent(WtyDeviceDO::getDeptId, reqVO.getDeptId())
                 .eqIfPresent(WtyDeviceDO::getStatus, reqVO.getStatus())
