@@ -53,4 +53,14 @@ public interface DeptApi {
     @Parameter(name = "id", description = "部门编号", example = "1024", required = true)
     CommonResult<List<DeptRespDTO>> getChildDeptList(@RequestParam("id") Long id);
 
+    @GetMapping(PREFIX + "/get-with-children-filtered")
+    @Operation(summary = "根据条件获取部门及其所有子部门列表")
+    @Parameter(name = "id", description = "根部门编号", example = "1024", required = true)
+    @Parameter(name = "status", description = "部门状态 (可选)", example = "0")
+    @Parameter(name = "type", description = "部门类型 (可选)", example = "1")
+    CommonResult<List<DeptRespDTO>> getDeptWithChildrenFiltered(
+            @RequestParam("id") Long id,
+            @RequestParam(name = "status", required = false) Integer status,
+            @RequestParam(name = "type", required = false) Integer type);
+
 }

@@ -52,4 +52,11 @@ public interface WtyComponentService {
      */
     PageResult<WtyComponentDO> getWtyComponentPage(WtyComponentPageReqVO pageReqVO);
 
+    /**
+     * 获得配件列表
+     *
+     *
+     * @return 配件列表
+     */
+    List<WtyComponentDO> getWtyComponentList();
 }

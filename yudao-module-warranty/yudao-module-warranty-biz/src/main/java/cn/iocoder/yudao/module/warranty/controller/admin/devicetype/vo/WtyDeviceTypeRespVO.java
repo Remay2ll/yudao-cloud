@@ -30,6 +30,10 @@ public class WtyDeviceTypeRespVO {
     @ExcelProperty("父类型ID")
     private Long parentTypeId;
 
+    @Schema(description = "是否叶子节点")
+    @ExcelProperty("是否叶子节点（0：否，1：是）")
+    private Integer isLeaf;
+
     @Schema(description = "类型描述", example = "你猜")
     @ExcelProperty("类型描述")
     private String description;

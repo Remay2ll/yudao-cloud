@@ -1,6 +1,9 @@
 ### 获取租户编号 /admin-api/system/get-id-by-name
 GET {{baseUrl}}/system/tenant/get-id-by-name?name=芋道源码
 
+### 获取租户名称列表 /admin-api/system/tenant/name-list
+GET {{baseUrl}}/system/tenant/name-list
+
 ### 创建租户 /admin-api/system/tenant/create
 POST {{baseUrl}}/system/tenant/create
 Content-Type: application/json

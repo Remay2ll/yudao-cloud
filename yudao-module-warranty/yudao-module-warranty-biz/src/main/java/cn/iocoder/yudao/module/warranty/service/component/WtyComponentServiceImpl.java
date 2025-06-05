@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.warranty.service.component;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.warranty.enums.common.CommonAuditStatus;
+import cn.iocoder.yudao.module.warranty.enums.common.CommonStatus;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -69,6 +72,14 @@ public class WtyComponentServiceImpl implements WtyComponentService {
     @Override
     public PageResult<WtyComponentDO> getWtyComponentPage(WtyComponentPageReqVO pageReqVO) {
         return wtyComponentMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public List<WtyComponentDO> getWtyComponentList() {
+        return wtyComponentMapper.selectList(new LambdaQueryWrapperX<WtyComponentDO>()
+                .eq(WtyComponentDO::getStatus, CommonStatus.ENABLE.getStatus())
+                .eq(WtyComponentDO::getIsAudit, CommonAuditStatus.APPROVED.getAuditStatus())
+                .orderByAsc(WtyComponentDO::getId));
     }
 
 }

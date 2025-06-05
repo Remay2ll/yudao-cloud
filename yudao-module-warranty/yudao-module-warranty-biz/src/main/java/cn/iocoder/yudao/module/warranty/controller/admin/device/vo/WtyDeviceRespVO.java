@@ -38,6 +38,14 @@ public class WtyDeviceRespVO {
     @ExcelProperty("所属机构ID")
     private Long deptId;
 
+    @Schema(description = "设备类型名称", example = "空调")
+    @ExcelProperty("设备类型名称")
+    private String typeName;
+
+    @Schema(description = "所属机构名称", example = "技术部")
+    @ExcelProperty("所属机构名称")
+    private String deptName;
+
     @Schema(description = "设备状态（0：停用，1：启用）", example = "1")
     @ExcelProperty(value = "设备状态（0：停用，1：启用）", converter = DictConvert.class)
     @DictFormat("warranty_device_status") // TODO 代码优化：建议设置到对应的 DictTypeConstants 枚举类中

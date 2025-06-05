@@ -15,6 +15,11 @@ import java.util.*;
 public interface DeptService {
 
     /**
+     * 初始化部门的本地缓存
+     */
+    void initLocalCache();
+
+    /**
      * 创建部门
      *
      * @param createReqVO 部门信息
@@ -113,5 +118,23 @@ public interface DeptService {
      * @param ids 角色编号数组
      */
     void validateDeptList(Collection<Long> ids);
+
+    /**
+     * 获取当前用户可访问的网点列表
+     *
+     * @param userId 用户ID
+     * @return 部门列表
+     */
+    List<DeptDO> getMyAccessibleDeptList(Long userId);
+
+    /**
+     * 根据条件获取部门及其所有子部门列表
+     *
+     * @param id 根部门 ID
+     * @param status 状态 (可选)
+     * @param type 类型 (可选)
+     * @return 符合条件的部门及其子部门列表
+     */
+    List<DeptDO> getDeptWithChildrenFiltered(Long id, Integer status, Integer type);
 
 }

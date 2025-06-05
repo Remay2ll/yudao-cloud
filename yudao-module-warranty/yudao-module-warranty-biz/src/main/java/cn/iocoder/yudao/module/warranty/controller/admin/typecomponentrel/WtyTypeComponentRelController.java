@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.warranty.controller.admin.typecomponentrel;
 
+import cn.iocoder.yudao.module.warranty.dal.dataobject.typecomponentrel.WtyTypeComponentRelDoWithCompName;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -75,7 +76,7 @@ public class WtyTypeComponentRelController {
     @Operation(summary = "获得设备类型-配件关联分页")
     @PreAuthorize("@ss.hasPermission('warranty:wty-type-component-rel:query')")
     public CommonResult<PageResult<WtyTypeComponentRelRespVO>> getWtyTypeComponentRelPage(@Valid WtyTypeComponentRelPageReqVO pageReqVO) {
-        PageResult<WtyTypeComponentRelDO> pageResult = wtyTypeComponentRelService.getWtyTypeComponentRelPage(pageReqVO);
+        PageResult<WtyTypeComponentRelDoWithCompName> pageResult = wtyTypeComponentRelService.getWtyTypeComponentRelPageWithCompName(pageReqVO);
         return success(BeanUtils.toBean(pageResult, WtyTypeComponentRelRespVO.class));
     }
 

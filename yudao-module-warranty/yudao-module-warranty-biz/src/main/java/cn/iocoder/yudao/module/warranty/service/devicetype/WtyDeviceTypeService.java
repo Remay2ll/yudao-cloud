@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.warranty.service.devicetype;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.warranty.dal.dataobject.devicetype.WtyDeviceTypeWithPNameDO;
+import cn.iocoder.yudao.module.warranty.dal.dataobject.typecomponentrel.WtyTypeComponentRelDoWithCompName;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.warranty.controller.admin.devicetype.vo.*;
 import cn.iocoder.yudao.module.warranty.dal.dataobject.devicetype.WtyDeviceTypeDO;
@@ -46,12 +49,28 @@ public interface WtyDeviceTypeService {
     WtyDeviceTypeDO getWtyDeviceType(Long id);
 
     /**
+     * 获得设备类型列表
+     *
+     * @param ids 编号列表
+     * @return 设备类型列表
+     */
+    List<WtyDeviceTypeDO> getWtyDeviceTypeList(Collection<Long> ids);
+
+    /**
      * 获得设备类型分页
      *
      * @param pageReqVO 分页查询
      * @return 设备类型分页
      */
     PageResult<WtyDeviceTypeDO> getWtyDeviceTypePage(WtyDeviceTypePageReqVO pageReqVO);
+
+    /**
+     * 获得设备类型分页（带父节点）
+     *
+     * @param pageReqVO 分页查询
+     * @return 设备类型分页
+     */
+    PageResult<WtyDeviceTypeWithPNameDO> getWtyDeviceTypePageWithP(WtyDeviceTypePageReqVO pageReqVO);
 
     // ==================== 子表（设备类型-配件关联） ====================
 
@@ -63,6 +82,15 @@ public interface WtyDeviceTypeService {
      * @return 设备类型-配件关联分页
      */
     PageResult<WtyTypeComponentRelDO> getWtyTypeComponentRelPage(PageParam pageReqVO, Long typeId);
+
+    /**
+     * 获得包含配件名称的设备类型-配件关联分页
+     *
+     * @param pageReqVO 分页查询
+     * @param typeId 设备类型ID
+     * @return 设备类型-配件关联分页
+     */
+    PageResult<WtyTypeComponentRelDoWithCompName> getWtyTypeComponentRelPageWithCompName(PageParam pageReqVO, Long typeId);
 
     /**
      * 创建设备类型-配件关联
@@ -94,4 +122,19 @@ public interface WtyDeviceTypeService {
 	 */
     WtyTypeComponentRelDO getWtyTypeComponentRel(Long id);
 
+    /**
+     * 获得设备类型
+     *
+     * @param reqVO 父节点信息
+     * @return 设备类型列表
+     */
+    List<WtyDeviceTypeDO> getWtyDeviceTypeTree(WtyDeviceTypeTreeReqVO reqVO);
+
+    /**
+     * 获得单层设备类型树
+     *
+     * @param reqVO 父节点信息
+     * @return 设备类型列表
+     */
+    List<WtyDeviceTypeDO> getWtyDeviceTypeTreeOneLevel(WtyDeviceTypeTreeReqVO reqVO);
 }

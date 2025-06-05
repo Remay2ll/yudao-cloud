@@ -9,4 +9,58 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- BaseResultMap 定义 - 继承 MyBatis-Plus 自动映射，只定义额外字段 -->
+    <resultMap id="BaseResultMap" type="cn.iocoder.yudao.module.warranty.dal.dataobject.device.WtyDeviceDO" autoMapping="true">
+        <!-- 额外字段，通过 JOIN 查询填充 -->
+        <result column="typeName" property="typeName" jdbcType="VARCHAR"/>
+        <result column="deptName" property="deptName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- Base_Column_List 定义 -->
+    <sql id="Base_Column_List">
+        id, device_name, device_code, description, type_id, dept_id, status, is_audit,
+        creator, create_time, updater, update_time, deleted, tenant_id
+    </sql>
+
+    <!-- <select id="selectByDeviceCode" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM wty_device
+        WHERE device_code = #{deviceCode} AND deleted = 0
+        LIMIT 1
+    </select> -->
+
+    <!-- 查询设备详情，包含设备类型名称和部门名称 -->
+    <select id="selectByIdWithDetails" resultMap="BaseResultMap">
+        SELECT
+            d.*,
+            dt.type_name AS typeName,
+            sd.name AS deptName
+        FROM
+            warranty_device d
+        LEFT JOIN
+            warranty_device_type dt ON d.type_id = dt.id
+        LEFT JOIN
+            system_dept sd ON d.dept_id = sd.id
+        WHERE
+            d.id = #{id} AND d.deleted = 0
+    </select>
+
+    <!-- 根据设备编码查询设备详情，包含设备类型名称和部门名称 -->
+    <select id="selectOneByDeviceCodeWithDetails" resultMap="BaseResultMap">
+        SELECT
+            d.*,
+            dt.type_name AS typeName,
+            sd.name AS deptName
+        FROM
+            warranty_device d
+        LEFT JOIN
+            warranty_device_type dt ON d.type_id = dt.id
+        LEFT JOIN
+            system_dept sd ON d.dept_id = sd.id
+        WHERE
+            d.device_code = #{deviceCode} AND d.deleted = 0
+        LIMIT 1
+    </select>
+
 </mapper>

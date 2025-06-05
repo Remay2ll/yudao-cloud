@@ -42,7 +42,15 @@ public interface WtyDeviceService {
      * @param id 编号
      * @return 设备
      */
-    WtyDeviceDO getWtyDevice(Long id);
+    WtyDeviceRespVO getWtyDevice(Long id);
+
+    /**
+     * 根据设备编码获得设备
+     *
+     * @param deviceCode 设备编码
+     * @return 设备
+     */
+    WtyDeviceRespVO getWtyDeviceByCode(String deviceCode);
 
     /**
      * 获得设备分页
@@ -50,6 +58,15 @@ public interface WtyDeviceService {
      * @param pageReqVO 分页查询
      * @return 设备分页
      */
-    PageResult<WtyDeviceDO> getWtyDevicePage(WtyDevicePageReqVO pageReqVO);
+    PageResult<WtyDeviceRespVO> getWtyDevicePage(WtyDevicePageReqVO pageReqVO);
+
+    /**
+     * 根据网点ID获取该网点及其下属网点下的所有设备列表（不分页）
+     *
+     * @param deptId 网点ID
+     * @param status 设备状态 (可选, 为 null 则查询所有状态或仅启用，具体逻辑在实现中定义)
+     * @return 设备列表
+     */
+    List<WtyDeviceRespVO> getWtyDeviceListByDeptIdRecursive(Long deptId, Integer status);
 
 }

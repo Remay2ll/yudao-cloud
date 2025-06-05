@@ -32,4 +32,7 @@ public class WtyTypeComponentRelRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "配件名称")
+    @ExcelProperty("配件名称")
+    private String componentName;
 }

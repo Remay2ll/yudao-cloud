@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.warranty.service.typecomponentrel;
 
+import cn.iocoder.yudao.module.warranty.dal.dataobject.typecomponentrel.WtyTypeComponentRelDoWithCompName;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -69,6 +70,11 @@ public class WtyTypeComponentRelServiceImpl implements WtyTypeComponentRelServic
     @Override
     public PageResult<WtyTypeComponentRelDO> getWtyTypeComponentRelPage(WtyTypeComponentRelPageReqVO pageReqVO) {
         return wtyTypeComponentRelMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public PageResult<WtyTypeComponentRelDoWithCompName> getWtyTypeComponentRelPageWithCompName(WtyTypeComponentRelPageReqVO pageReqVO) {
+        return wtyTypeComponentRelMapper.selectPageJoinCompName(pageReqVO);
     }
 
 }

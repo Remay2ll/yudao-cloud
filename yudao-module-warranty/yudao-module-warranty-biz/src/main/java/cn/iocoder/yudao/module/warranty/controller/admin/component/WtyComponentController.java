@@ -92,4 +92,11 @@ public class WtyComponentController {
                         BeanUtils.toBean(list, WtyComponentRespVO.class));
     }
 
+    @GetMapping("/list")
+    @Operation(summary = "获得配件列表")
+    @PreAuthorize("@ss.hasPermission('warranty:wty-component:query')")
+    public CommonResult<List<WtyComponentRespListVO>> getWtyComponentList() {
+        List<WtyComponentDO> wtyComponentDOList = wtyComponentService.getWtyComponentList();
+        return success(BeanUtils.toBean(wtyComponentDOList, WtyComponentRespListVO.class));
+    }
 }

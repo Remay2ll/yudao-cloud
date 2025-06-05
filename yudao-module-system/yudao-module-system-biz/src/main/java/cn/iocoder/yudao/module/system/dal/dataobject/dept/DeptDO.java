@@ -63,4 +63,11 @@ public class DeptDO extends TenantBaseDO {
      */
     private Integer status;
 
+    /**
+     * 部门类型
+     *
+     * 枚举 {@link cn.iocoder.yudao.module.system.enums.DeptTypeEnum}
+     */
+    private Integer type;
+
 }

@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.warranty.service.typecomponentrel;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.warranty.dal.dataobject.typecomponentrel.WtyTypeComponentRelDoWithCompName;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.warranty.controller.admin.typecomponentrel.vo.*;
 import cn.iocoder.yudao.module.warranty.dal.dataobject.typecomponentrel.WtyTypeComponentRelDO;
@@ -52,4 +54,11 @@ public interface WtyTypeComponentRelService {
      */
     PageResult<WtyTypeComponentRelDO> getWtyTypeComponentRelPage(WtyTypeComponentRelPageReqVO pageReqVO);
 
+    /**
+     * 获得包含配件名称的设备类型-配件关联分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 包含配件名称的设备类型-配件关联分页
+     */
+    PageResult<WtyTypeComponentRelDoWithCompName> getWtyTypeComponentRelPageWithCompName(WtyTypeComponentRelPageReqVO pageReqVO);
 }

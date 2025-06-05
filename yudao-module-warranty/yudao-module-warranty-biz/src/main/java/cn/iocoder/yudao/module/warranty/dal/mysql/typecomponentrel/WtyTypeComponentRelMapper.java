@@ -6,7 +6,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.MPJLambdaWrapperX;
+import cn.iocoder.yudao.module.warranty.dal.dataobject.component.WtyComponentDO;
 import cn.iocoder.yudao.module.warranty.dal.dataobject.typecomponentrel.WtyTypeComponentRelDO;
+import cn.iocoder.yudao.module.warranty.dal.dataobject.typecomponentrel.WtyTypeComponentRelDoWithCompName;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.warranty.controller.admin.typecomponentrel.vo.*;
 
@@ -27,9 +30,30 @@ public interface WtyTypeComponentRelMapper extends BaseMapperX<WtyTypeComponentR
                 .orderByDesc(WtyTypeComponentRelDO::getId));
     }
 
+    default PageResult<WtyTypeComponentRelDoWithCompName> selectPageJoinCompName(WtyTypeComponentRelPageReqVO reqVO) {
+        return selectJoinPage(reqVO,WtyTypeComponentRelDoWithCompName.class, new MPJLambdaWrapperX<WtyTypeComponentRelDO>()
+                .eqIfPresent(WtyTypeComponentRelDO::getTypeId, reqVO.getTypeId())
+                .eqIfPresent(WtyTypeComponentRelDO::getComponentId, reqVO.getComponentId())
+                .eqIfPresent(WtyTypeComponentRelDO::getQuantity, reqVO.getQuantity())
+                .betweenIfPresent(WtyTypeComponentRelDO::getCreateTime, reqVO.getCreateTime())
+                .selectAll(WtyTypeComponentRelDO.class)
+                .selectAs(WtyComponentDO::getComponentName,WtyTypeComponentRelDoWithCompName::getComponentName)
+                .leftJoin(WtyComponentDO.class,WtyComponentDO::getId,WtyTypeComponentRelDO::getComponentId)
+                .orderByDesc(WtyTypeComponentRelDO::getId));
+    }
+
     default PageResult<WtyTypeComponentRelDO> selectPage(PageParam reqVO, Long typeId) {
         return selectPage(reqVO, new LambdaQueryWrapperX<WtyTypeComponentRelDO>()
                 .eq(WtyTypeComponentRelDO::getTypeId, typeId)
+                .orderByDesc(WtyTypeComponentRelDO::getId));
+    }
+
+    default PageResult<WtyTypeComponentRelDoWithCompName> selectPageJoinCompName(PageParam reqVO, Long typeId) {
+        return selectJoinPage(reqVO,WtyTypeComponentRelDoWithCompName.class,new MPJLambdaWrapperX<WtyTypeComponentRelDO>()
+                .selectAll(WtyTypeComponentRelDO.class)
+                .eq(WtyTypeComponentRelDO::getTypeId, typeId)
+                .selectAs(WtyComponentDO::getComponentName,WtyTypeComponentRelDoWithCompName::getComponentName)
+                .leftJoin(WtyComponentDO.class,WtyComponentDO::getId,WtyTypeComponentRelDO::getComponentId)
                 .orderByDesc(WtyTypeComponentRelDO::getId));
     }
 

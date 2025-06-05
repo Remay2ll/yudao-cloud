@@ -60,4 +60,16 @@ public class WtyDeviceDO extends BaseDO {
      */
     private Integer isAudit;
 
+    /**
+     * 设备类型名称 (通过 JOIN 查询填充)
+     */
+    @TableField(exist = false) // 重要：标记为非数据库表字段，如果您的ORM框架需要的话
+    private String typeName;
+
+    /**
+     * 部门名称 (通过 JOIN 查询填充)
+     */
+    @TableField(exist = false) // 重要：标记为非数据库表字段
+    private String deptName;
+
 }

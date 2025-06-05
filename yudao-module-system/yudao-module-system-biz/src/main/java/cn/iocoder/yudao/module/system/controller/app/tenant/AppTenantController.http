@@ -1,0 +1,2 @@
+### 获取租户名称列表 /app-api/system/tenant/name-list
+GET {{appApi}}/system/tenant/name-list 

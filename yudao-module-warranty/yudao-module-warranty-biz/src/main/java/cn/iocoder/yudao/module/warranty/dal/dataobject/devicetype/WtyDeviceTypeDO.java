@@ -22,6 +22,7 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 @AllArgsConstructor
 public class WtyDeviceTypeDO extends BaseDO {
 
+    public static final Long PARENT_TYPE_ID_ROOT = 0L;
     /**
      * 主键ID
      */
@@ -39,6 +40,10 @@ public class WtyDeviceTypeDO extends BaseDO {
      * 父类型ID
      */
     private Long parentTypeId;
+    /**
+     * 是否是叶子节点（0：否，1：是）
+     */
+    private Integer isLeaf;
     /**
      * 类型描述
      */

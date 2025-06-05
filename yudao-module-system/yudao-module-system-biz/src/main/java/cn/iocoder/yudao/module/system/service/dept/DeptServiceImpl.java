@@ -10,11 +10,15 @@ import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqV
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.DeptMapper;
 import cn.iocoder.yudao.module.system.dal.redis.RedisKeyConstants;
+import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
+import cn.iocoder.yudao.module.system.dal.mysql.user.AdminUserMapper;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -23,6 +27,7 @@ import java.util.*;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
 import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 
 /**
  * 部门 Service 实现类
@@ -36,6 +41,9 @@ public class DeptServiceImpl implements DeptService {
 
     @Resource
     private DeptMapper deptMapper;
+
+    @Resource
+    private AdminUserMapper adminUserMapper;
 
     @Override
     @CacheEvict(cacheNames = RedisKeyConstants.DEPT_CHILDREN_ID_LIST,
@@ -218,6 +226,83 @@ public class DeptServiceImpl implements DeptService {
                 throw exception(DEPT_NOT_ENABLE, dept.getName());
             }
         });
+    }
+
+    @Override
+    public List<DeptDO> getMyAccessibleDeptList(Long userId) {
+        // 1. 获取用户基本信息，从而获得用户所在的部门 ID
+        AdminUserDO user = adminUserMapper.selectById(userId);
+        if (user == null || user.getDeptId() == null) {
+            return Collections.emptyList(); // 或者根据业务需求抛出异常
+        }
+        Long userDeptId = user.getDeptId();
+
+        // 2. 获取用户所在部门及其所有下级部门
+        List<DeptDO> accessibleDepts = new LinkedList<>();
+        DeptDO userDept = deptMapper.selectById(userDeptId);
+        if (userDept != null) {
+            accessibleDepts.add(userDept); // 添加用户自己的部门
+            // 获取所有子部门
+            List<DeptDO> childrenDepts = getChildDeptList(Collections.singletonList(userDeptId)); // 使用 getChildDeptList
+            accessibleDepts.addAll(childrenDepts);
+        }
+
+        // 3. 过滤，只保留状态正常且类型为网点（假设类型 1 为网点）的部门
+        // 注意: "类型为网点" 的判断条件需要根据您的实际 DeptDO 定义来调整
+        // 例如，如果 DeptDO 有一个 type 字段，可以这样过滤：
+        // .filter(dept -> CommonStatusEnum.ENABLE.getStatus().equals(dept.getStatus()) && Integer.valueOf(1).equals(dept.getType()))
+        // 这里暂时只按下线状态过滤
+        return accessibleDepts.stream()
+                .filter(dept -> CommonStatusEnum.ENABLE.getStatus().equals(dept.getStatus()))
+                // TODO: 根据实际情况添加网点类型的过滤条件 (例如 dept.getType().equals(YOUR_NET_POINT_TYPE_ENUM))
+                .sorted(Comparator.comparing(DeptDO::getSort)) // 按排序字段排序
+                .distinct() //确保部门不重复
+                .toList();
+    }
+
+    @Override
+    @PostConstruct
+    public void initLocalCache() {
+        // TODO 未来实现缓存初始化逻辑，例如：
+        // 1. 加载所有部门数据到本地缓存
+        // 2. 构建部门树形结构缓存
+        // 3. 缓存部门层级关系等
+        log.info("[initLocalCache] 初始化部门本地缓存...");
+    }
+
+    @Override
+    public List<DeptDO> getDeptWithChildrenFiltered(Long id, Integer status, Integer type) {
+        List<DeptDO> resultList = new ArrayList<>();
+        DeptDO rootDept = deptMapper.selectById(id);
+
+        // 检查根部门是否符合条件
+        if (rootDept != null) {
+            boolean statusMatch = (status == null) || status.equals(rootDept.getStatus());
+            boolean typeMatch = (type == null) || type.equals(rootDept.getType());
+            if (statusMatch && typeMatch) {
+                resultList.add(rootDept);
+            }
+            // 递归获取并过滤子部门
+            collectChildrenFiltered(rootDept.getId(), status, type, resultList);
+        }
+        return resultList.stream().distinct().sorted(Comparator.comparing(DeptDO::getSort)).toList(); //去重和排序
+    }
+
+    private void collectChildrenFiltered(Long parentId, Integer status, Integer type, List<DeptDO> resultList) {
+        // 使用 LambdaQueryWrapperX 进行条件查询
+        LambdaQueryWrapperX<DeptDO> queryWrapper = new LambdaQueryWrapperX<DeptDO>()
+                .eq(DeptDO::getParentId, parentId)
+                .eqIfPresent(DeptDO::getStatus, status)
+                .eqIfPresent(DeptDO::getType, type);
+        
+        List<DeptDO> children = deptMapper.selectList(queryWrapper);
+
+        if (CollUtil.isNotEmpty(children)) {
+            resultList.addAll(children);
+            for (DeptDO child : children) {
+                collectChildrenFiltered(child.getId(), status, type, resultList);
+            }
+        }
     }
 
 }

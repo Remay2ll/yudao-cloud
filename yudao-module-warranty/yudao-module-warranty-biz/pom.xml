@@ -115,6 +115,12 @@
             <groupId>cn.iocoder.cloud</groupId>
             <artifactId>yudao-spring-boot-starter-monitor</artifactId>
         </dependency>
+
+        <!-- IP 操作工具类 -->
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-spring-boot-starter-biz-ip</artifactId>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

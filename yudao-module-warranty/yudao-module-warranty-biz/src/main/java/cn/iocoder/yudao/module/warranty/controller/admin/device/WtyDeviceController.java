@@ -67,16 +67,33 @@ public class WtyDeviceController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('warranty:wty-device:query')")
     public CommonResult<WtyDeviceRespVO> getWtyDevice(@RequestParam("id") Long id) {
-        WtyDeviceDO wtyDevice = wtyDeviceService.getWtyDevice(id);
-        return success(BeanUtils.toBean(wtyDevice, WtyDeviceRespVO.class));
+        WtyDeviceRespVO wtyDeviceRespVO = wtyDeviceService.getWtyDevice(id);
+        return success(wtyDeviceRespVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得设备分页")
     @PreAuthorize("@ss.hasPermission('warranty:wty-device:query')")
     public CommonResult<PageResult<WtyDeviceRespVO>> getWtyDevicePage(@Valid WtyDevicePageReqVO pageReqVO) {
-        PageResult<WtyDeviceDO> pageResult = wtyDeviceService.getWtyDevicePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, WtyDeviceRespVO.class));
+        PageResult<WtyDeviceRespVO> pageResult = wtyDeviceService.getWtyDevicePage(pageReqVO);
+        return success(pageResult);
+    }
+
+    @GetMapping("/get-by-code/{deviceCode}")
+    @Operation(summary = "根据设备编码获得设备")
+    @PreAuthorize("@ss.hasPermission('warranty:wty-device:query')")
+    public CommonResult<WtyDeviceRespVO> getWtyDeviceByCode(@PathVariable("deviceCode") String deviceCode) {
+        WtyDeviceRespVO wtyDeviceRespVO = wtyDeviceService.getWtyDeviceByCode(deviceCode);
+        return success(wtyDeviceRespVO);
+    }
+
+    @GetMapping("/list-by-dept-recursive")
+    @Operation(summary = "根据网点ID获取该网点及其下属网点下的所有设备列表（不分页）")
+    public CommonResult<List<WtyDeviceRespVO>> getWtyDeviceListByDeptIdRecursive(
+            @Parameter(name = "deptId", description = "网点ID", required = true) @RequestParam("deptId") Long deptId,
+            @Parameter(name = "status", description = "设备状态 (可选，默认启用)") @RequestParam(name = "status", required = false) Integer status) {
+        List<WtyDeviceRespVO> list = wtyDeviceService.getWtyDeviceListByDeptIdRecursive(deptId, status);
+        return success(list);
     }
 
     @GetMapping("/export-excel")
@@ -86,10 +103,11 @@ public class WtyDeviceController {
     public void exportWtyDeviceExcel(@Valid WtyDevicePageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<WtyDeviceDO> list = wtyDeviceService.getWtyDevicePage(pageReqVO).getList();
+        PageResult<WtyDeviceRespVO> pageResult = wtyDeviceService.getWtyDevicePage(pageReqVO);
+        List<WtyDeviceRespVO> list = pageResult.getList();
         // 导出 Excel
         ExcelUtils.write(response, "设备.xls", "数据", WtyDeviceRespVO.class,
-                        BeanUtils.toBean(list, WtyDeviceRespVO.class));
+                        list);
     }
 
 }

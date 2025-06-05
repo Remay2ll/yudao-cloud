@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.warranty.dal.dataobject.device.WtyDeviceDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.warranty.controller.admin.device.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 设备 Mapper
@@ -29,5 +30,18 @@ public interface WtyDeviceMapper extends BaseMapperX<WtyDeviceDO> {
                 .betweenIfPresent(WtyDeviceDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(WtyDeviceDO::getId));
     }
+
+    // WtyDeviceDO selectByDeviceCode(@Param("deviceCode") String deviceCode); // 已被 BaseMapperX.selectOne 替代
+
+    default List<WtyDeviceDO> selectListByDeptIdsAndStatus(Collection<Long> deptIds, Integer status) {
+        return selectList(new LambdaQueryWrapperX<WtyDeviceDO>()
+                .in(WtyDeviceDO::getDeptId, deptIds) // 使用 in 而不是 inIfPresent，因为 deptIds 是必须的
+                .eq(WtyDeviceDO::getStatus, status)   // status 也是必须的
+                .orderByDesc(WtyDeviceDO::getId)); // 或其他排序规则
+    }
+
+    WtyDeviceDO selectByIdWithDetails(@Param("id") Long id);
+
+    WtyDeviceDO selectOneByDeviceCodeWithDetails(@Param("deviceCode") String deviceCode);
 
 }

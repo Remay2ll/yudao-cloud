@@ -23,6 +23,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -53,6 +55,19 @@ public class TokenAuthenticationFilter implements GlobalFilter, Ordered {
      */
     private static final LoginUser LOGIN_USER_EMPTY = new LoginUser();
 
+    /**
+     * 不需要认证的URL列表
+     */
+    private static final List<String> PERMIT_ALL_URLS = Arrays.asList(
+            "/admin-api/system/tenant/name-list",
+            "/app-api/system/tenant/name-list",
+            "/admin-api/system/tenant/get-id-by-name",
+            "/admin-api/system/tenant/get-by-website",
+            "/admin-api/system/captcha/get-image",
+            "/admin-api/system/captcha/get",
+            "/admin-api/system/captcha/check"
+    );
+
     private final WebClient webClient;
 
     /**
@@ -82,6 +97,12 @@ public class TokenAuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, GatewayFilterChain chain) {
+        // 检查是否为不需要认证的URL
+        String path = exchange.getRequest().getPath().value();
+        if (isPermitAllUrl(path)) {
+            return chain.filter(exchange);
+        }
+
         // 移除 login-user 的请求头，避免伪造模拟
         SecurityFrameworkUtils.removeLoginUser(exchange);
 
@@ -107,6 +128,13 @@ public class TokenAuthenticationFilter implements GlobalFilter, Ordered {
                     .request(builder -> SecurityFrameworkUtils.setLoginUserHeader(builder, user)).build();
             return chain.filter(newExchange);
         });
+    }
+
+    /**
+     * 判断是否为不需要认证的URL
+     */
+    private boolean isPermitAllUrl(String path) {
+        return PERMIT_ALL_URLS.stream().anyMatch(path::equals);
     }
 
     private Mono<LoginUser> getLoginUser(ServerWebExchange exchange, String token) {

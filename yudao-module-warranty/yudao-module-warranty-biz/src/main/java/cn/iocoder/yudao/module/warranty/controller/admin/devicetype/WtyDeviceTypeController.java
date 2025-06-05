@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.warranty.controller.admin.devicetype;
 
+import cn.iocoder.yudao.module.warranty.dal.dataobject.device.WtyDeviceDO;
+import cn.iocoder.yudao.module.warranty.dal.dataobject.devicetype.WtyDeviceTypeWithPNameDO;
+import cn.iocoder.yudao.module.warranty.dal.dataobject.typecomponentrel.WtyTypeComponentRelDoWithCompName;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -75,9 +78,9 @@ public class WtyDeviceTypeController {
     @GetMapping("/page")
     @Operation(summary = "获得设备类型分页")
     @PreAuthorize("@ss.hasPermission('warranty:wty-device-type:query')")
-    public CommonResult<PageResult<WtyDeviceTypeRespVO>> getWtyDeviceTypePage(@Valid WtyDeviceTypePageReqVO pageReqVO) {
-        PageResult<WtyDeviceTypeDO> pageResult = wtyDeviceTypeService.getWtyDeviceTypePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, WtyDeviceTypeRespVO.class));
+    public CommonResult<PageResult<WtyDeviceTypeResTableVO>> getWtyDeviceTypePage(@Valid WtyDeviceTypePageReqVO pageReqVO) {
+        PageResult<WtyDeviceTypeWithPNameDO> pageResult = wtyDeviceTypeService.getWtyDeviceTypePageWithP(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, WtyDeviceTypeResTableVO.class));
     }
 
     @GetMapping("/export-excel")
@@ -93,15 +96,29 @@ public class WtyDeviceTypeController {
                         BeanUtils.toBean(list, WtyDeviceTypeRespVO.class));
     }
 
+    @GetMapping("/tree")
+    @Operation(summary = "获得设备类型树形数据")
+    @PreAuthorize("@ss.hasPermission('warranty:wty-device-type:query')")
+    public CommonResult<List<WtyDeviceTypeResTreeVO>> getWtyDeviceTypeTree(@Valid WtyDeviceTypeTreeReqVO reqVO) {
+        List<WtyDeviceTypeDO> wtyDeviceTypeTree = wtyDeviceTypeService.getWtyDeviceTypeTree(reqVO);
+        return success(BeanUtils.toBean(wtyDeviceTypeTree, WtyDeviceTypeResTreeVO.class));
+    }
+
+    @GetMapping("/tree-one-level")
+    @Operation(summary = "获得单层设备类型树形数据")
+    @PreAuthorize("@ss.hasPermission('warranty:wty-device-type:query')")
+    public CommonResult<List<WtyDeviceTypeResTreeVO>> getWtyDeviceTypeTreeOneLevel(@Valid WtyDeviceTypeTreeReqVO reqVO) {
+        List<WtyDeviceTypeDO> wtyDeviceTypeTree = wtyDeviceTypeService.getWtyDeviceTypeTreeOneLevel(reqVO);
+        return success(BeanUtils.toBean(wtyDeviceTypeTree, WtyDeviceTypeResTreeVO.class));
+    }
     // ==================== 子表（设备类型-配件关联） ====================
 
     @GetMapping("/wty-type-component-rel/page")
     @Operation(summary = "获得设备类型-配件关联分页")
     @Parameter(name = "typeId", description = "设备类型ID")
     @PreAuthorize("@ss.hasPermission('warranty:wty-device-type:query')")
-    public CommonResult<PageResult<WtyTypeComponentRelDO>> getWtyTypeComponentRelPage(PageParam pageReqVO,
-                                                                                        @RequestParam("typeId") Long typeId) {
-        return success(wtyDeviceTypeService.getWtyTypeComponentRelPage(pageReqVO, typeId));
+    public CommonResult<PageResult<WtyTypeComponentRelDoWithCompName>> getWtyTypeComponentRelPage(PageParam pageReqVO, @RequestParam("typeId") Long typeId) {
+        return success(wtyDeviceTypeService.getWtyTypeComponentRelPageWithCompName(pageReqVO, typeId));
     }
 
     @PostMapping("/wty-type-component-rel/create")

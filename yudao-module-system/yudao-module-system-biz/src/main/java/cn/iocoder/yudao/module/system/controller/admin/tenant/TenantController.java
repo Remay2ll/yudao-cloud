@@ -7,9 +7,11 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.framework.tenant.core.aop.TenantIgnore;
 import cn.iocoder.yudao.module.system.controller.admin.tenant.vo.tenant.TenantPageReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.tenant.vo.tenant.TenantRespVO;
 import cn.iocoder.yudao.module.system.controller.admin.tenant.vo.tenant.TenantSaveReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.tenant.vo.tenant.TenantNameRespVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.tenant.TenantDO;
 import cn.iocoder.yudao.module.system.service.tenant.TenantService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,6 +55,21 @@ public class TenantController {
         List<TenantDO> list = tenantService.getTenantListByStatus(CommonStatusEnum.ENABLE.getStatus());
         return success(convertList(list, tenantDO ->
                 new TenantRespVO().setId(tenantDO.getId()).setName(tenantDO.getName())));
+    }
+
+    @GetMapping("/name-list")
+    @PermitAll
+    @TenantIgnore
+    @Operation(summary = "获取租户名称列表", description = "不需要认证，获取所有启用状态的租户名称列表")
+    public CommonResult<List<TenantNameRespVO>> getTenantNameList() {
+        List<TenantDO> list = tenantService.getTenantListByStatus(CommonStatusEnum.ENABLE.getStatus());
+        return success(convertList(list, tenantDO -> {
+            TenantNameRespVO vo = new TenantNameRespVO();
+            vo.setId(tenantDO.getId());
+            vo.setName(tenantDO.getName());
+            vo.setStatus(tenantDO.getStatus());
+            return vo;
+        }));
     }
 
     @GetMapping("/get-by-website")
